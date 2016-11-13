@@ -43,7 +43,7 @@ app.get('/task3A/:devace', async (req, res) => {
   } catch (err) {
 
     res.sendStatus(404);
-    res.data(err.message);
+    res.send(err.message);
   }
 });
 
@@ -57,7 +57,7 @@ app.get('/task3A/:devace/:params', async (req, res) => {
     }
   } catch (err) {
     res.sendStatus(404);
-    res.data(err.message);
+    res.send(err.message);
   }
 });
 
@@ -83,7 +83,7 @@ app.get('/task3A/:devace/:params/:end', async (req, res) => {
     }
   } catch (err) {
     res.sendStatus(404);
-    res.data('Not found');
+    res.send('Not found');
   }
 });
 
