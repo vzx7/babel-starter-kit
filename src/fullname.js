@@ -11,31 +11,36 @@ function getInitials(param) {
   }
 }
 
-app.get('/', function (req, res) {
+app.get('/task2b', function (req, res) {
   let response;
-  let [...fullname] = req.query.fullname.split(' ');
-  let arrayLength = fullname.length;
+    try {
+      let [...fullname] = req.query.fullname.split(' ');
+      let arrayLength = fullname.length;
 
-  if (arrayLength > 3 || fullname[0] == '' ) {
+      if (arrayLength > 3 || fullname[0] == '' ) {
+        response = 'Invalid fullname';
+      } else if (arrayLength === 3) {
+        try {
+          let middleName = getInitials(fullname[1]);
+          let firstName = getInitials(fullname[0]);
+          response = `${fullname[2]} ${firstName}. ${middleName}.`;
+        } catch (err) {
+          response = err.message;
+        } 
+      } else if (arrayLength === 2) {
+        try {
+          let firstName = getInitials(fullname[0]);
+          response = `${fullname[1]} ${firstName}.`;
+        } catch (err) {
+          response = err.message;
+        } 
+      } else if (arrayLength === 1) {
+          response = `${fullname[0]}`;
+      }
+  } catch (err) {
     response = 'Invalid fullname';
-  } else if (arrayLength === 3) {
-    try {
-      let middleName = getInitials(fullname[1]);
-      let firstName = getInitials(fullname[0]);
-      response = `${fullname[2]} ${firstName}. ${middleName}.`;
-    } catch (err) {
-      response = err.message;
-    } 
-  } else if (arrayLength === 2) {
-    try {
-      let firstName = getInitials(fullname[0]);
-      response = `${fullname[1]} ${firstName}.`;
-    } catch (err) {
-      response = err.message;
-    } 
-  } else if (arrayLength === 1) {
-      response = `${fullname[0]}`;
   }
+  
 
   res.send(response)
 })
