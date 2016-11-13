@@ -1,51 +1,82 @@
-import express from 'express'
+import express from 'express';
+import cors from 'cors';
 
-const app = express()
+const app = express();
+app.use(cors());
 
-function getInitials(param) {
-  let tmp = /[a-zа-я]{1}/iu.exec(param);
-  if (typeof tmp == 'object') {
-    return tmp[0].toUpperCase();
-  } else {
-    throw new Error('Invalid fullname');
+function clearArray(fullname) {
+  let arr = [];
+
+  for (let value of fullname) {
+    if (typeof value === 'string' 
+    && value !== "" 
+    && value !== " " 
+    && value !== undefined 
+    && value !== null) {
+      arr.push(value);
+    } 
   }
+  return arr;
 }
+
+function getLastname(param) {
+  let str = '';
+  param.split('').forEach((value,i) => {
+    if(i == 0) {
+      str += value.toUpperCase();
+    } else {
+      str += value.toLowerCase();
+    } 
+  });
+
+  return str;
+}
+
+function testParam(param, lastname) {
+  if(/(\d|_|\/|\\)/.test(param)) { 
+    throw new Error('Invalid fullname');
+  } 
+}
+
+function getInitials (param) {
+    testParam(param);
+    let tmp = /[a-zа-я]{1}/iu.exec(param);
+    if (typeof tmp == 'object') {
+      return tmp[0].toUpperCase();
+    } else {
+      throw new Error('Invalid fullname');
+    }
+}
+
+
 
 app.get('/task2b', function (req, res) {
   let response;
-    try {
-      let [...fullname] = req.query.fullname.split(' ');
-      let arrayLength = fullname.length;
-
-      if (arrayLength > 3 || fullname[0] == '' ) {
-        response = 'Invalid fullname';
-      } else if (arrayLength === 3) {
-        try {
-          let middleName = getInitials(fullname[1]);
-          let firstName = getInitials(fullname[0]);
-          response = `${fullname[2]} ${firstName}. ${middleName}.`;
-        } catch (err) {
-          response = err.message;
-        } 
-      } else if (arrayLength === 2) {
-        try {
-          let firstName = getInitials(fullname[0]);
-          response = `${fullname[1]} ${firstName}.`;
-        } catch (err) {
-          response = err.message;
-        } 
-      } else if (arrayLength === 1) {
-          response = `${fullname[0]}`;
-      }
+  try {
+    let fullname = clearArray(req.query.fullname.split(' '));
+    let arrayLength = fullname.length;
+    if (arrayLength === 0 || arrayLength > 3 || fullname[0] == '') {
+      response = 'Invalid fullname';
+    } else if (arrayLength === 3) {
+        testParam(fullname[2]);
+        let middleName = getInitials(fullname[1]);
+        let firstName = getInitials(fullname[0]);
+        response = `${getLastname(fullname[2])} ${firstName}. ${middleName}.`;
+    } else if (arrayLength === 2) {
+        testParam(fullname[1]);
+        let firstName = getInitials(fullname[0]);
+        response = `${getLastname(fullname[1])} ${firstName}.`;
+    } else if (arrayLength === 1) {
+      testParam(fullname[0]);
+      response = `${getLastname(fullname[0])}`;
+    }
   } catch (err) {
     response = 'Invalid fullname';
   }
-  
 
-  res.send(response)
-})
+  res.send(response);
+});
 
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
-})
-
+  console.log('Example app listening on port 3000!');
+});
