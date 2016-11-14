@@ -8,16 +8,16 @@ function getUserName(params) {
   let arr = params.split('/');
   let res;
   for(let index in arr) {
-    if(!/com|ru|http|--/.test(arr[index]) && arr[index] != '') {
-      res = `@${/([a-zA-Zа-яА-Я\d_\.]{1,})/.exec(arr[index])[0]}`;
+    if(!/com|ru|http|[-]{2,}/.test(arr[index]) && arr[index] != '') {
+      res = `@${/([a-zA-Zа-яА-Я\d_\.-]{1,})/.exec(arr[index])[0]}`;
       break;
     }
   };
   
-  if (res.length > 0) {
+  if (typeof res !== 'undefined') {
     return res;
   } else {
-    new Error('Invalid username');
+    throw new Error('Invalid username');
   }
 }
 
@@ -25,6 +25,7 @@ app.get('/task2C', function (req, res) {
   try {
     res.send(getUserName(req.query.username));
   } catch (err) {
+    console.log(err)
     res.send(err.message);
   }
 })
