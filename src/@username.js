@@ -1,9 +1,3 @@
-import express from 'express';
-import cors from 'cors';
-
-const app = express();
-app.use(cors());
-
 function getUserName(params) {
   let arr = params.split('/');
   let res;
@@ -21,16 +15,6 @@ function getUserName(params) {
   }
 }
 
-app.get('/task2C', function (req, res) {
-  try {
-    res.send(getUserName(req.query.username));
-  } catch (err) {
-    console.log(err)
-    res.send(err.message);
-  }
-})
-
-
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
-});
+export default async (req, res) => {
+    return getUserName(req.query.username);
+};

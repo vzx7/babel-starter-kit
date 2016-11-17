@@ -1,8 +1,3 @@
-import express from 'express';
-import cors from 'cors';
-
-const app = express();
-app.use(cors());
 
 function clearArray(fullname) {
   let arr = [];
@@ -48,9 +43,7 @@ function getInitials (param) {
     }
 }
 
-
-
-app.get('/task2b', function (req, res) {
+export default async (req, res) => {
   let response;
   try {
     let fullname = clearArray(req.query.fullname.split(' '));
@@ -74,9 +67,5 @@ app.get('/task2b', function (req, res) {
     response = 'Invalid fullname';
   }
 
-  res.send(response);
-});
-
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
-});
+  return response;
+};

@@ -3,6 +3,11 @@ import fetch from 'isomorphic-fetch';
 import _ from 'lodash';
 import cors from 'cors';
 
+import runTask2B from './fullname';
+import runTask2C from './@username';
+import runTask2A from './task_a+b';
+import runTask3A from './API80286';
+
 const app = express();
 app.use(cors());
 
@@ -17,44 +22,44 @@ fetch(pcUrl)
     console.log('Чтото пошло не так:', err);
   });
 
+app.get('/Task2B', function (req, res) {
+    runTask2B(req, res)
+      .then( async (response) => {
+       await res.json(response);
+      }).catch(err => {
+        console.log('Чтото пошло не так:', err);
+        res.sendStatus(404);
+      });
+});
+
+app.get('/Task2C', function (req, res) {
+    runTask2C(req, res)
+      .then( async (response) => {
+       await res.send(response);
+      }).catch(err => {
+        console.log('Чтото пошло не так:', err);
+        res.sendStatus(404);
+      });
+});
+
+app.get('/task2A', function (req, res) {
+  runTask2A(req, res)
+    .then( async (response) => {
+      await res.json(response);
+    }).catch(err => {
+      console.log('Чтото пошло не так:', err);
+      res.sendStatus(404);
+    });
+});
 
 app.get('/task3A*', (req, res) => {
-  try {
-    let path = [];
-    req.url.replace('/task3A','').split('/').map((value) => {
-      if (value != '') path.push(value);
+  runTask3A(req, res, pc)
+    .then( async (response) => {
+      await res.json(response);
+    }).catch(err => {
+      console.log('Чтото пошло не так:', err);
+      res.sendStatus(404);
     });
-
-    if(path.length === 0) {
-      res.json(pc);
-    } else if(path[0] === 'volumes') { 
-      let volume = {};
-      let arrVolumes = {};
-      pc['hdd'].map((value, index)=> {
-          volume = _.pick(value, ['size','volume']);
-          arrVolumes[volume.volume] = volume.size + (arrVolumes[volume.volume] ? +arrVolumes[volume.volume].replace('B','') : 0) + 'B'; 
-      });
-
-      res.json(arrVolumes);
-    } else { 
-      let response = pc;
-      path.map((prop) => {
-        if(response.constructor()[prop] !== undefined) {
-            throw new Error('No data');
-        } 
-        
-        response = response[prop];
-      });
-
-      if (response !== undefined) {
-        res.json(response);
-      } else {
-        throw new Error('No data');
-      } 
-    }
-  } catch (err) {
-    res.sendStatus(404);
-  }
 });
 
 app.listen(3000, function () {
